@@ -2,6 +2,8 @@
 
 A modern web interface for managing Azure VMs through natural language interactions. Built with Next.js 14, TypeScript, and Tailwind CSS.  This frontend is designed to be deployed to Azure App Service and can be modified to be used as a frontend for any GenAI ChatBot with modifications.
 
+[![Build Status](https://github.com/Rickcau/it-ops-chat-bot/actions/workflows/nextjs.yml/badge.svg)](https://github.com/Rickcau/it-ops-chat-bot/actions)
+
 ## Features
 
 - 🤖 Natural language VM management
@@ -33,7 +35,7 @@ A modern web interface for managing Azure VMs through natural language interacti
 
 1. Clone the repository:
 ```bash
-git clone [your-repo-url]
+git clone https://github.com/Rickcau/it-ops-chat-bot.git
 cd it-ops-chat-bot
 ```
 
