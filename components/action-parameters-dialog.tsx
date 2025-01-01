@@ -3,13 +3,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import type { ActionDefinition, ActionFormData } from '@/types/actions'
+import { Action, ActionData } from '@/types/actions'
 
 interface ActionParametersDialogProps {
-  action: ActionDefinition;
+  action: Action;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (action: ActionDefinition, data: ActionFormData) => void;
+  onSubmit: (action: Action, data: ActionData) => void;
 }
 
 export function ActionParametersDialog({ 
@@ -18,7 +18,7 @@ export function ActionParametersDialog({
   onOpenChange,
   onSubmit 
 }: ActionParametersDialogProps) {
-  const [formData, setFormData] = useState<ActionFormData>({})
+  const [formData, setFormData] = useState<ActionData>({})
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -40,7 +40,7 @@ export function ActionParametersDialog({
               <Input
                 id={param.name}
                 placeholder={param.placeholder}
-                value={formData[param.name as keyof ActionFormData] || ''}
+                value={formData[param.name] || ''}
                 onChange={(e) => 
                   setFormData(prev => ({
                     ...prev,

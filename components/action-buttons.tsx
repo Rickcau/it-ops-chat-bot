@@ -8,7 +8,6 @@ import {
   StopCircle,
   ListChecks,
   RefreshCw,
-  LucideIcon
 } from "lucide-react"
 import {
   Tooltip,
@@ -16,34 +15,10 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { Action, ActionData } from "@/types/actions"
 
 interface ActionButtonsProps {
   onAction: (prompt: string) => void
-}
-
-interface ActionParameter {
-  name: string
-  label: string
-  placeholder: string
-  required: boolean
-}
-
-interface Action {
-  id: string
-  label: string
-  value: string
-  className: string
-  requiresParameters: boolean
-  icon: LucideIcon
-  tooltip: string
-  parameters?: ActionParameter[]
-  promptTemplate: string
-}
-
-interface ActionData {
-  vmName?: string
-  resourceGroup?: string
-  [key: string]: string | undefined
 }
 
 export function ActionButtons({ onAction }: ActionButtonsProps) {
