@@ -8,6 +8,7 @@ import {
   StopCircle,
   ListChecks,
   RefreshCw,
+  LucideIcon
 } from "lucide-react"
 import {
   Tooltip,
@@ -33,7 +34,7 @@ interface Action {
   value: string
   className: string
   requiresParameters: boolean
-  icon: React.ComponentType
+  icon: LucideIcon
   tooltip: string
   parameters?: ActionParameter[]
   promptTemplate: string
@@ -203,7 +204,7 @@ export function ActionButtons({ onAction }: ActionButtonsProps) {
                         action.className
                       )}
                     >
-                      <Icon className="h-3.5 w-3.5" />
+                      <Icon size={14} />
                       {action.label}
                     </Button>
                   </TooltipTrigger>
