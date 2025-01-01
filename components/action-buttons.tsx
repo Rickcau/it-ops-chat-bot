@@ -1,0 +1,212 @@
+import { useState, useEffect } from 'react'
+import { Button } from "@/components/ui/button"
+import { ActionParametersDialog } from "@/components/action-parameters-dialog"
+import { RecentActions } from "@/components/recent-actions"
+import { cn } from "@/lib/utils"
+import {
+  PlayCircle,
+  StopCircle,
+  ListChecks,
+  RefreshCw,
+} from "lucide-react"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
+
+interface ActionButtonsProps {
+  onAction: (prompt: string) => void
+}
+
+export function ActionButtons({ onAction }: ActionButtonsProps) {
+  const [selectedAction, setSelectedAction] = useState<any>(null)
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const [recentActionsKey, setRecentActionsKey] = useState(0)
+
+  const saveToRecents = (action: any, data?: any) => {
+    const recentActions = JSON.parse(localStorage.getItem('recentActions') || '[]')
+    const newAction = {
+      id: action.id,
+      label: action.label,
+      timestamp: Date.now(),
+      className: action.className,
+      promptTemplate: data 
+        ? action.promptTemplate
+            .replace('{vmName}', data.vmName)
+            .replace('{resourceGroup}', data.resourceGroup)
+        : action.promptTemplate,
+      ...(data && { vmName: data.vmName, resourceGroup: data.resourceGroup })
+    }
+
+    // Add to start, remove duplicates, keep only last 10
+    const updatedActions = [
+      newAction,
+      ...recentActions.filter((a: any) => 
+        a.id !== action.id || 
+        a.vmName !== newAction.vmName || 
+        a.resourceGroup !== newAction.resourceGroup
+      )
+    ].slice(0, 10)
+
+    localStorage.setItem('recentActions', JSON.stringify(updatedActions))
+    setRecentActionsKey(prev => prev + 1) // Force RecentActions to re-render
+  }
+
+  const actions = [
+    { 
+      id: 'start-vm',
+      label: "Start VM", 
+      value: "start", 
+      className: "bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700 text-white",
+      requiresParameters: true,
+      icon: PlayCircle,
+      tooltip: "Start a specific virtual machine",
+      parameters: [
+        {
+          name: 'vmName',
+          label: 'VM Name',
+          placeholder: 'Enter VM name',
+          required: true
+        },
+        {
+          name: 'resourceGroup',
+          label: 'Resource Group',
+          placeholder: 'Enter resource group',
+          required: true
+        }
+      ],
+      promptTemplate: 'Can you start VM {vmName} in resource group {resourceGroup}?'
+    },
+    { 
+      id: 'stop-vm',
+      label: "Stop VM", 
+      value: "shutdown", 
+      className: "bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 text-white",
+      requiresParameters: true,
+      icon: StopCircle,
+      tooltip: "Stop a running virtual machine",
+      parameters: [
+        {
+          name: 'vmName',
+          label: 'VM Name',
+          placeholder: 'Enter VM name',
+          required: true
+        },
+        {
+          name: 'resourceGroup',
+          label: 'Resource Group',
+          placeholder: 'Enter resource group',
+          required: true
+        }
+      ],
+      promptTemplate: 'Can you stop VM {vmName} in resource group {resourceGroup}?'
+    },
+    { 
+      id: 'list-vms',
+      label: "List VMs", 
+      value: "list", 
+      className: "bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white",
+      requiresParameters: false,
+      icon: ListChecks,
+      tooltip: "Show all virtual machines in your subscription",
+      promptTemplate: 'Can you list all VMs?'
+    },
+    { 
+      id: 'restart-vm',
+      label: "Restart VM", 
+      value: "restart", 
+      className: "bg-orange-500 hover:bg-orange-600 dark:bg-orange-600 dark:hover:bg-orange-700 text-white",
+      requiresParameters: true,
+      icon: RefreshCw,
+      tooltip: "Restart a specific virtual machine",
+      parameters: [
+        {
+          name: 'vmName',
+          label: 'VM Name',
+          placeholder: 'Enter VM name',
+          required: true
+        },
+        {
+          name: 'resourceGroup',
+          label: 'Resource Group',
+          placeholder: 'Enter resource group',
+          required: true
+        }
+      ],
+      promptTemplate: 'Can you restart VM {vmName} in resource group {resourceGroup}?'
+    }
+  ]
+
+  const handleActionClick = (action: any) => {
+    if (action.requiresParameters) {
+      setSelectedAction(action)
+      setDialogOpen(true)
+    } else {
+      onAction(action.promptTemplate)
+      saveToRecents(action)
+    }
+  }
+
+  const handleParameterSubmit = (action: any, data: any) => {
+    let prompt = action.promptTemplate
+    if (data.vmName) {
+      prompt = prompt.replace('{vmName}', data.vmName)
+    }
+    if (data.resourceGroup) {
+      prompt = prompt.replace('{resourceGroup}', data.resourceGroup)
+    }
+    onAction(prompt)
+    saveToRecents(action, data)
+  }
+
+  return (
+    <>
+      <div className="flex flex-col">
+        <div className="flex flex-wrap gap-1.5 justify-center py-3 border-t">
+          <TooltipProvider>
+            {actions.map((action) => {
+              const Icon = action.icon
+              return (
+                <Tooltip key={action.id}>
+                  <TooltipTrigger asChild>
+                    <Button
+                      onClick={() => handleActionClick(action)}
+                      className={cn(
+                        "h-7 px-2.5 text-xs font-medium gap-1.5",
+                        action.className
+                      )}
+                    >
+                      <Icon className="h-3.5 w-3.5" />
+                      {action.label}
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>{action.tooltip}</p>
+                  </TooltipContent>
+                </Tooltip>
+              )
+            })}
+          </TooltipProvider>
+        </div>
+
+        <RecentActions 
+          key={recentActionsKey}
+          onActionClick={onAction}
+          onClear={() => setRecentActionsKey(prev => prev + 1)}
+        />
+      </div>
+
+      {selectedAction && (
+        <ActionParametersDialog
+          action={selectedAction}
+          open={dialogOpen}
+          onOpenChange={setDialogOpen}
+          onSubmit={handleParameterSubmit}
+        />
+      )}
+    </>
+  )
+}
+
