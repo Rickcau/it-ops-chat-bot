@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { ActionParametersDialog } from "@/components/action-parameters-dialog"
 import { RecentActions } from "@/components/recent-actions"
@@ -20,12 +20,37 @@ interface ActionButtonsProps {
   onAction: (prompt: string) => void
 }
 
+interface ActionParameter {
+  name: string
+  label: string
+  placeholder: string
+  required: boolean
+}
+
+interface Action {
+  id: string
+  label: string
+  value: string
+  className: string
+  requiresParameters: boolean
+  icon: React.ComponentType
+  tooltip: string
+  parameters?: ActionParameter[]
+  promptTemplate: string
+}
+
+interface ActionData {
+  vmName?: string
+  resourceGroup?: string
+  [key: string]: string | undefined
+}
+
 export function ActionButtons({ onAction }: ActionButtonsProps) {
-  const [selectedAction, setSelectedAction] = useState<any>(null)
+  const [selectedAction, setSelectedAction] = useState<Action | null>(null)
   const [dialogOpen, setDialogOpen] = useState(false)
   const [recentActionsKey, setRecentActionsKey] = useState(0)
 
-  const saveToRecents = (action: any, data?: any) => {
+  const saveToRecents = (action: Action, data?: ActionData) => {
     const recentActions = JSON.parse(localStorage.getItem('recentActions') || '[]')
     const newAction = {
       id: action.id,
@@ -34,8 +59,8 @@ export function ActionButtons({ onAction }: ActionButtonsProps) {
       className: action.className,
       promptTemplate: data 
         ? action.promptTemplate
-            .replace('{vmName}', data.vmName)
-            .replace('{resourceGroup}', data.resourceGroup)
+            .replace('{vmName}', data.vmName || '')
+            .replace('{resourceGroup}', data.resourceGroup || '')
         : action.promptTemplate,
       ...(data && { vmName: data.vmName, resourceGroup: data.resourceGroup })
     }
@@ -43,7 +68,7 @@ export function ActionButtons({ onAction }: ActionButtonsProps) {
     // Add to start, remove duplicates, keep only last 10
     const updatedActions = [
       newAction,
-      ...recentActions.filter((a: any) => 
+      ...recentActions.filter((a: typeof newAction) => 
         a.id !== action.id || 
         a.vmName !== newAction.vmName || 
         a.resourceGroup !== newAction.resourceGroup
@@ -54,7 +79,7 @@ export function ActionButtons({ onAction }: ActionButtonsProps) {
     setRecentActionsKey(prev => prev + 1) // Force RecentActions to re-render
   }
 
-  const actions = [
+  const actions: Action[] = [
     { 
       id: 'start-vm',
       label: "Start VM", 
@@ -139,7 +164,7 @@ export function ActionButtons({ onAction }: ActionButtonsProps) {
     }
   ]
 
-  const handleActionClick = (action: any) => {
+  const handleActionClick = (action: Action) => {
     if (action.requiresParameters) {
       setSelectedAction(action)
       setDialogOpen(true)
@@ -149,7 +174,7 @@ export function ActionButtons({ onAction }: ActionButtonsProps) {
     }
   }
 
-  const handleParameterSubmit = (action: any, data: any) => {
+  const handleParameterSubmit = (action: Action, data: ActionData) => {
     let prompt = action.promptTemplate
     if (data.vmName) {
       prompt = prompt.replace('{vmName}', data.vmName)
