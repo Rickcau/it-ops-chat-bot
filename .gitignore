@@ -2,6 +2,9 @@
 .next/
 out/
 
+# Cursor files
+.cursorrules
+
 # Dependencies
 node_modules/
 
@@ -26,3 +29,4 @@ yarn-error.log*
 # OS generated files
 .DS_Store
 Thumbs.db 
+certificates
