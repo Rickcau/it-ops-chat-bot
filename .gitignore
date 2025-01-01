@@ -2,6 +2,9 @@
 .next/
 out/
 
+# Otherfiles
+it-ops-chatbot.zip
+
 # Cursor files
 .cursorrules
 
