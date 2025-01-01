@@ -5,7 +5,13 @@ import { type ReactNode } from "react"
 
 interface ThemeProviderProps {
   children: ReactNode;
-  [key: string]: any;
+  forcedTheme?: string;
+  theme?: string;
+  attribute?: string;
+  defaultTheme?: string;
+  enableSystem?: boolean;
+  disableTransitionOnChange?: boolean;
+  storageKey?: string;
 }
 
 export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
