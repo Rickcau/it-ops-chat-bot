@@ -1,6 +1,6 @@
-# IT Operations Chat Bot
+# Ship360 Assistant
 
-A modern web interface for managing Azure VMs through natural language interactions. Built with Next.js 14, TypeScript, and Tailwind CSS.  This frontend is designed to be deployed to Azure App Service and can be modified to be used as a frontend for any GenAI ChatBot with modifications.
+A modern web interface for managing Shipments through natural language interactions. Built with Next.js 14, TypeScript, and Tailwind CSS.  This frontend is designed to be deployed to Azure App Service and can be modified to be used as a frontend for any GenAI ChatBot with modifications.
 
 [![Next.js CI](https://github.com/Rickcau/it-ops-chat-bot/actions/workflows/nextjs.yml/badge.svg)](https://github.com/Rickcau/it-ops-chat-bot/actions/workflows/nextjs.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -124,3 +124,41 @@ types/              # TypeScript type definitions
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details. 
+
+## New UI Components
+
+### Collapsible Form Sections
+
+We've added collapsible form sections to improve the user experience for forms with many fields. This is especially useful for the Rate Shop functionality where many details are required.
+
+#### Features:
+- Organize form fields into logical sections
+- Expandable/collapsible sections for better space management
+- Smooth animations for section transitions
+- Improved mobile responsiveness
+
+#### Example Usage:
+
+```jsx
+import { FormSection } from '@/components/form-section'
+
+function MyForm() {
+  return (
+    <form>
+      <FormSection title="Section Title" defaultOpen={true}>
+        {/* Your form fields here */}
+        <input type="text" />
+      </FormSection>
+    </form>
+  )
+}
+```
+
+#### Required Dependencies:
+
+The necessary dependencies are already included in package.json:
+- @radix-ui/react-collapsible
+- @radix-ui/react-checkbox
+- @radix-ui/react-select
+
+Simply run `npm install` to ensure all dependencies are installed. 

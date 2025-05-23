@@ -60,13 +60,14 @@ export default function ChatInterface() {
       }))
     } else {
       try {
-        const payload: ChatApiRequest = {
+        const payload = {
           sessionId,
           userId: config.testUser,
-          prompt: input
+          chatName: "New Chat",
+          user_prompt: input
         }
 
-        const apiUrl = `${config.apiBaseUrl}/${config.endpoints.chat}`
+        const apiUrl = '/api/chat'
         console.log('Calling API:', apiUrl)
         console.log('With payload:', payload)
 
@@ -74,8 +75,6 @@ export default function ChatInterface() {
           method: 'POST',
           headers: { 
             'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'api-key': config.apiKey
           },
           body: JSON.stringify(payload)
         })
@@ -92,14 +91,14 @@ export default function ChatInterface() {
           throw new Error(`API error: ${response.status} - ${errorText}`)
         }
 
-        const data = await response.json()
+        const data = await response.text()
         console.log('API Response:', data)
         
         // Convert the API response format to our Message format
         const apiMessage: Message = {
           id: nanoid(),
           role: 'assistant',
-          content: data.chatResponse
+          content: data
         }
         
         setChatState(prev => ({
@@ -144,13 +143,14 @@ export default function ChatInterface() {
       }))
     } else {
       try {
-        const payload: ChatApiRequest = {
+        const payload = {
           sessionId,
           userId: config.testUser,
-          prompt
+          chatName: "New Chat",
+          user_prompt: prompt
         }
 
-        const apiUrl = `${config.apiBaseUrl}/${config.endpoints.chat}`
+        const apiUrl = '/api/chat'
         console.log('Calling API:', apiUrl)
         console.log('With payload:', payload)
 
@@ -158,8 +158,6 @@ export default function ChatInterface() {
           method: 'POST',
           headers: { 
             'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'api-key': config.apiKey
           },
           body: JSON.stringify(payload)
         })
@@ -176,14 +174,14 @@ export default function ChatInterface() {
           throw new Error(`API error: ${response.status} - ${errorText}`)
         }
 
-        const data = await response.json()
+        const data = await response.text()
         console.log('API Response:', data)
         
         // Convert the API response format to our Message format
         const apiMessage: Message = {
           id: nanoid(),
           role: 'assistant',
-          content: data.chatResponse
+          content: data
         }
         
         setChatState(prev => ({
@@ -215,7 +213,7 @@ export default function ChatInterface() {
           <Card className="flex-1 flex flex-col overflow-hidden">
             <CardHeader className="flex flex-col space-y-3 pb-4">
               <div className="flex justify-between items-center">
-                <h1 className="text-2xl font-bold tracking-tight">IT Operations Assistant</h1>
+                <h1 className="text-2xl font-bold tracking-tight">Ship360 Assistant</h1>
                 <div className="flex items-center gap-3">
                   <ThemeToggle />
                   <div className="h-4 w-px bg-border" />
